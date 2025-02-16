@@ -12,6 +12,8 @@ export class Player {
   #playerTimeline: PlayerTimeline[] = [];
   #achievements: string[] = [];
 
+  static WORLD: string = '<WORLD>';
+
   constructor(name: string) {
     this.#name = name;
   }
