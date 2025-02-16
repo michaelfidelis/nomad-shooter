@@ -7,10 +7,14 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { LogParserService } from '../common/services/log-parser/log-parser.service';
+import { MatchesService } from './services/matches.service';
 
 @Controller('matches')
 export class MatchesController {
-  constructor(private readonly logParserService: LogParserService) {}
+  constructor(
+    private readonly logParserService: LogParserService,
+    private readonly matchesService: MatchesService,
+  ) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
@@ -22,6 +26,6 @@ export class MatchesController {
     const data = matchLogsFile.buffer.toString('utf-8');
     const logEntries = this.logParserService.parse(data);
 
-    return logEntries;
+    return this.matchesService.calculateRankings(logEntries).toJson();
   }
 }
