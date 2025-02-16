@@ -54,8 +54,7 @@ export class Player {
   getFavoriteWeapon(): string | null {
     const weaponStats = this.getWeaponStats();
     const favoriteWeapon = Object.entries(weaponStats).reduce(
-      (acc, [weapon, kills]) =>
-        kills > acc.kills ? { weapon, count: kills } : acc,
+      (acc, [weapon, kills]) => (kills > acc.kills ? { weapon, kills } : acc),
       { weapon: null, kills: 0 },
     );
 
