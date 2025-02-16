@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LogParserService } from './log-parser.service';
 import { PlayerEventDTO } from 'src/common/dtos/player-event.dto';
 import { MatchRoundEventDTO } from 'src/common/dtos/match-round-event.dto';
+import { LogEntry } from 'src/common/dtos/log-entry.dto';
 
 describe('LogParserService', () => {
   let service: LogParserService;
@@ -120,8 +121,10 @@ describe('LogParserService', () => {
       '24/04/2020 19:36:33 - <WORLD> killed Marcus by DROWN\n' +
       '24/04/2020 20:19:22 - Match 11348961 has ended\n';
 
-    const playerEventsFilter = (logEntry) => logEntry.eventType === 'player';
-    const matchRoundEventsFilter = (logEntry) => logEntry.eventType === 'match';
+    const playerEventsFilter = (logEntry: LogEntry) =>
+      logEntry.eventType === 'player';
+    const matchRoundEventsFilter = (logEntry: LogEntry) =>
+      logEntry.eventType === 'match';
 
     // Act
     const logEntries = service.parse(data);
@@ -142,11 +145,14 @@ describe('LogParserService', () => {
     ${'newline'}              | ${'\n'}
     ${'multiple newlines'}    | ${'\n\n\n\n'}
     ${'multiple whitespaces'} | ${'    '}
-  `('should process an invalid ($description) value', ({ data }) => {
-    // Act
-    const logEntries = service.parse(data);
+  `(
+    'should process an invalid ($description) value',
+    ({ data }: { data: string }) => {
+      // Act
+      const logEntries = service.parse(data);
 
-    // Assert
-    expect(logEntries).toHaveLength(0);
-  });
+      // Assert
+      expect(logEntries).toHaveLength(0);
+    },
+  );
 });

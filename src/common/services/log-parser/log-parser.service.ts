@@ -1,4 +1,4 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { MatchRoundEventDTO } from '../../dtos/match-round-event.dto';
 import { PlayerEventDTO } from '../../dtos/player-event.dto';
 import { LogEntry } from '../../dtos/log-entry.dto';
@@ -18,7 +18,7 @@ export class LogParserService {
 
     const logEntries: LogEntry[] = [];
 
-    for (let line of lines) {
+    for (const line of lines) {
       if (!line.trim()) continue;
 
       const playerEvent = line.match(this.PLAYER_EVENT_REGEX);
@@ -38,7 +38,7 @@ export class LogParserService {
   }
 
   private parseMatchEvent(matchEvent: RegExpMatchArray): LogEntry {
-    const [_, day, month, year, hour, minute, second, matchId, matchEventType] =
+    const [, day, month, year, hour, minute, second, matchId, matchEventType] =
       matchEvent;
 
     const datetime = new Date(+year, +month - 1, +day, +hour, +minute, +second);
@@ -55,7 +55,7 @@ export class LogParserService {
   }
 
   private parsePlayerEvent(playerEvent: RegExpMatchArray): LogEntry {
-    const [_, day, month, year, hour, minute, second, killer, victim, weapon] =
+    const [, day, month, year, hour, minute, second, killer, victim, weapon] =
       playerEvent;
 
     const datetime = new Date(+year, +month - 1, +day, +hour, +minute, +second);

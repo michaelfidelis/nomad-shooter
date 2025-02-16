@@ -18,7 +18,7 @@ export class MatchesController {
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
-  async create(@UploadedFile() matchLogsFile: Express.Multer.File) {
+  create(@UploadedFile() matchLogsFile: Express.Multer.File) {
     if (!matchLogsFile) {
       throw new UnprocessableEntityException('No file uploaded.');
     }

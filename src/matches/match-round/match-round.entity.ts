@@ -25,8 +25,8 @@ export class MatchRound {
     this.#playersFlags[playerName] = (this.#playersFlags[playerName] || 0) + 1;
   }
 
-  getPlayersFlags() {
-    return Object.assign(this.#playersFlags);
+  getPlayersFlags(): Record<string, number> {
+    return Object.assign(this.#playersFlags) as Record<string, number>;
   }
 
   finish(finishedAt: Date) {

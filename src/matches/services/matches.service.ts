@@ -16,7 +16,7 @@ export class MatchesService {
   calculateRankings(logEntries: LogEntry[]): Match {
     const match = new Match(randomUUID(), logEntries[0].datetime);
 
-    for (let logEntry of logEntries) {
+    for (const logEntry of logEntries) {
       const { eventType } = logEntry;
 
       const eventStrategy = this.strategies[eventType];

@@ -1,9 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LogEntry } from 'src/common/dtos/log-entry.dto';
-import { Match } from '../match.entity';
 import { MatchEventStrategy } from '../match-round/match-event.strategy';
-import { MatchRoundEventDTO } from 'src/common/dtos/match-round-event.dto';
-import { BadRequestException } from '@nestjs/common';
+import { Match } from '../match.entity';
 
 describe('PlayerEventStrategy', () => {
   let matchEventStrategy: MatchEventStrategy;

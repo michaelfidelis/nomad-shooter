@@ -1,11 +1,10 @@
+import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LogEntry } from 'src/common/dtos/log-entry.dto';
+import { MatchEventStrategy } from '../match-round/match-event.strategy';
 import { Match } from '../match.entity';
 import { PlayerEventStrategy } from './player-event.strategy';
 import { Player } from './player.entity';
-import { MatchEventStrategy } from '../match-round/match-event.strategy';
-import { MatchRoundEventDTO } from 'src/common/dtos/match-round-event.dto';
-import { BadRequestException } from '@nestjs/common';
 
 describe('PlayerEventStrategy', () => {
   let playerEventStrategy: PlayerEventStrategy;
@@ -120,7 +119,7 @@ describe('PlayerEventStrategy', () => {
 
     // Act & Assert
     expect(() => {
-      for (let logEntry of logEntries) {
+      for (const logEntry of logEntries) {
         playerEventStrategy.handleEvent(match, logEntry);
       }
     }).toThrow(new BadRequestException('The maximum number of players is 20'));
