@@ -1,7 +1,18 @@
 name: CI
 on: push
 jobs:
-  test:
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install modules
+      run: npm ci
+
+    - name: Run linter
+      run: npm run lint
+
+  tests:
+    needs: linter
     runs-on: ubuntu-latest
     strategy:
       matrix:
