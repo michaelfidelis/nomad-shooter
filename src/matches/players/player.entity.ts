@@ -46,6 +46,22 @@ export class Player {
     return this.#playerTimeline;
   }
 
+  getKillCount(): number {
+    return this.#playerTimeline.filter((timeline) => timeline.type === 'kill')
+      .length;
+  }
+
+  getFavoriteWeapon(): string | null {
+    const weaponStats = this.getWeaponStats();
+    const favoriteWeapon = Object.entries(weaponStats).reduce(
+      (acc, [weapon, kills]) =>
+        kills > acc.kills ? { weapon, count: kills } : acc,
+      { weapon: null, kills: 0 },
+    );
+
+    return favoriteWeapon.weapon;
+  }
+
   addAchievement(achievement: string) {
     this.#achievements.push(achievement);
   }
@@ -56,6 +72,7 @@ export class Player {
       weaponStats: this.#weaponStats,
       playerTimeline: this.#playerTimeline,
       achievements: this.#achievements,
+      favoriteWeapon: this.getFavoriteWeapon(),
     };
   }
 }

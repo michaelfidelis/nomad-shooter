@@ -12,6 +12,7 @@ export class Match {
   #finishedAt: Date;
   #isValid: boolean = true;
   #matchRounds: MatchRound[] = [];
+  #mvp: Player;
 
   constructor(id: string, startedAt: Date) {
     this.#id = id;
@@ -40,7 +41,7 @@ export class Match {
     }
 
     this.updateIsValid();
-    
+
     return this.#players[playerName];
   }
 
@@ -66,19 +67,39 @@ export class Match {
 
   finish() {
     this.#finishedAt = this.getCurrentRound()?.getFinishedAt();
+    this.computeMVP();
   }
 
   toJson() {
+    const mvp = this.#mvp && {
+      player: this.#mvp.getName(),
+      kills: this.#mvp.getKillCount(),
+      favoriteWeapon: this.#mvp?.getFavoriteWeapon(),
+    };
+
     return {
       id: this.#id,
       players: Object.values(this.#players).map((player) => player.toJson()),
       startedAt: this.#startedAt,
       finishedAt: this.#finishedAt,
       matchRounds: this.#matchRounds.map((matchRound) => matchRound.toJson()),
+      mvp,
     };
   }
 
   private updateIsValid(): void {
     this.#isValid = Object.keys(this.#players).length <= this.MAX_PLAYERS;
+  }
+
+  private computeMVP(): void {
+    const players = Object.values(this.getPlayers());
+
+    this.#mvp = players.reduce(
+      (selected: Player, player: Player) =>
+        selected.getKillCount() > player.getKillCount() ? selected : player,
+      players[0],
+    );
+
+    this.#mvp?.addAchievement('MVP');
   }
 }

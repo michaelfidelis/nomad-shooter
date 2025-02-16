@@ -25,6 +25,7 @@ export class MatchesService {
       }
     }
     match.finish();
+
     return match;
   }
 }
