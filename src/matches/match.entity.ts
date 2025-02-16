@@ -68,6 +68,7 @@ export class Match {
   finish() {
     this.#finishedAt = this.getCurrentRound()?.getFinishedAt();
     this.computeMVP();
+    this.computeAchievements();
   }
 
   toJson() {
@@ -101,5 +102,11 @@ export class Match {
     );
 
     this.#mvp?.addAchievement('MVP');
+  }
+
+  private computeAchievements() {
+    Object.values(this.getPlayers()).forEach((player) =>
+      player.computeAchievements(),
+    );
   }
 }

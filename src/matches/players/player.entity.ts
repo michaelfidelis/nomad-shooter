@@ -11,6 +11,7 @@ export class Player {
   #weaponStats: WeaponStats = {};
   #playerTimeline: PlayerTimeline[] = [];
   #achievements: string[] = [];
+  #bestStreak: number;
 
   static WORLD: string = '<WORLD>';
 
@@ -74,6 +75,71 @@ export class Player {
       playerTimeline: this.#playerTimeline,
       achievements: this.#achievements,
       favoriteWeapon: this.getFavoriteWeapon(),
+      bestStreak: this.#bestStreak,
     };
+  }
+
+  public computeAchievements(): void {
+    this.computeStreakAchievement();
+    this.computeNoDeathsAchievement();
+    this.compute5KillsIn1MinuteAchievement();
+    this.computeOnlyDeathsAndNoKillsAchievement();
+  }
+
+  private compute5KillsIn1MinuteAchievement(): void {
+    const killTimelines = this.#playerTimeline.filter(
+      (timeline) => timeline.type === 'kill',
+    );
+
+    for (let i = 0; i < killTimelines.length; i++) {
+      const currentKill = killTimelines[i];
+      const nextKills = killTimelines.slice(i + 1, i + 5);
+
+      if (nextKills.length < 4) {
+        break;
+      }
+
+      const is5KillsIn1Minute = nextKills.every(
+        (kill) => kill.when.getTime() - currentKill.when.getTime() < 60 * 1000,
+      );
+
+      if (is5KillsIn1Minute) {
+        this.addAchievement('5 kills in 1 minute');
+        break;
+      }
+    }
+  }
+
+  private computeStreakAchievement(): void {
+    const streak = this.#playerTimeline.reduce(
+      (acc, timeline) => {
+        if (timeline.type === 'kill') {
+          acc.current++;
+          acc.max = Math.max(acc.current, acc.max);
+        } else {
+          acc.current = 0;
+        }
+
+        return acc;
+      },
+      { current: 0, max: 0 },
+    );
+
+    this.#bestStreak = streak.max;
+    if (streak.max >= 5) {
+      this.addAchievement('Killing spree');
+    }
+  }
+
+  private computeNoDeathsAchievement(): void {
+    if (this.#playerTimeline.every((timeline) => timeline.type === 'kill')) {
+      this.addAchievement('No deaths');
+    }
+  }
+
+  private computeOnlyDeathsAndNoKillsAchievement(): void {
+    if (this.#playerTimeline.every((timeline) => timeline.type === 'death')) {
+      this.addAchievement('The target');
+    }
   }
 }
