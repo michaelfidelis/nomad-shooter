@@ -25,6 +25,10 @@ export class MatchRound {
     this.#playersFlags[playerName] = (this.#playersFlags[playerName] || 0) + 1;
   }
 
+  getPlayersFlags() {
+    return Object.assign(this.#playersFlags);
+  }
+
   finish(finishedAt: Date) {
     this.#finishedAt = finishedAt;
   }
