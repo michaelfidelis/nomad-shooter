@@ -1,28 +1,39 @@
 import {
   Controller,
+  MaxFileSizeValidator,
+  ParseFilePipe,
   Post,
-  UnprocessableEntityException,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
 import { LogParserService } from '../common/services/log-parser/log-parser.service';
+import { FileUploadInterceptor } from './interceptors/file-upload.interceptor';
 import { MatchesService } from './services/matches.service';
 
-@Controller('matches')
+@Controller('/api/matches')
 export class MatchesController {
+  private static readonly MAX_FILE_SIZE =
+    Number(process.env.MAX_FILE_SIZE) || 5 * 1024 * 1024; // 5MB
+
   constructor(
     private readonly logParserService: LogParserService,
     private readonly matchesService: MatchesService,
   ) {}
 
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  create(@UploadedFile() matchLogsFile: Express.Multer.File) {
-    if (!matchLogsFile) {
-      throw new UnprocessableEntityException('No file uploaded.');
-    }
-
+  @UseInterceptors(new FileUploadInterceptor().getInterceptor())
+  create(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({
+            maxSize: MatchesController.MAX_FILE_SIZE,
+          }),
+        ],
+      }),
+    )
+    matchLogsFile: Express.Multer.File,
+  ) {
     const data = matchLogsFile.buffer.toString('utf-8');
     const logEntries = this.logParserService.parse(data);
 
