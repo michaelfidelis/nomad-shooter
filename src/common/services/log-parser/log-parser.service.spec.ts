@@ -100,6 +100,19 @@ describe('LogParserService', () => {
     expect(logEntries).toHaveLength(1);
   });
 
+  it('should ignore invalid log entries', () => {
+    // Arrange
+    const data =
+      '15/02/2025 16:55:00 - Amanda kissed Roman on his face\n' +
+      '15/02/2025 16:59:00 - <WORLD> killed Roman by DROWN';
+
+    // Act
+    const logEntries = service.parse(data);
+
+    // Assert
+    expect(logEntries).toHaveLength(1);
+  });
+
   it('should parse a mixed event log entries', () => {
     // Arrange
     const data =
