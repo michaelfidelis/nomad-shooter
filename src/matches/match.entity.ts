@@ -61,6 +61,10 @@ export class Match {
     return this.#matchRounds[0];
   }
 
+  isCurrentRoundActive(): boolean {
+    return this.getCurrentRound().isActive();
+  }
+
   isValid(): boolean {
     return this.#isValid;
   }

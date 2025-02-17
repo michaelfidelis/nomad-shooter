@@ -33,6 +33,10 @@ export class MatchRound {
     this.#finishedAt = finishedAt;
   }
 
+  isActive(): boolean {
+    return !this.#finishedAt;
+  }
+
   toJson() {
     return {
       id: this.#id,

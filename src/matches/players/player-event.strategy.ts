@@ -8,6 +8,10 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 @Injectable()
 export class PlayerEventStrategy implements EventStrategy {
   handleEvent(match: Match, logEntry: LogEntry): void {
+    if (!match.isCurrentRoundActive()) {
+      throw new BadRequestException('There is no active round');
+    }
+
     const { datetime, event } = logEntry;
     const playerEvent: PlayerEventDTO = event as PlayerEventDTO;
 

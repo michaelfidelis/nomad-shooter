@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
 import { LogEntry } from '../../common/dtos/log-entry.dto';
-import { Match } from '../match.entity';
+import { MatchRoundEventDTO } from '../../common/dtos/match-round-event.dto';
 import { MatchEventStrategy } from '../match-round/match-event.strategy';
+import { Match } from '../match.entity';
 import { PlayerEventStrategy } from '../players/player-event.strategy';
 import { EventStrategy } from '../strategies/event.strategy';
 
@@ -14,8 +15,9 @@ export class MatchesService {
   };
 
   calculateRankings(logEntries: LogEntry[]): Match {
-    const match = new Match(randomUUID(), logEntries[0].datetime);
+    this.validate(logEntries);
 
+    const match = new Match(randomUUID(), logEntries[0].datetime);
     for (const logEntry of logEntries) {
       const { eventType } = logEntry;
 
@@ -25,7 +27,80 @@ export class MatchesService {
       }
     }
     match.finish();
-
     return match;
+  }
+
+  private validateMatchEnds(logEntries: LogEntry[]): void {
+    let currentEntryIndex = 0;
+    let nextEntryIndex = 1;
+
+    const opennings: number[] = [];
+
+    while (nextEntryIndex < logEntries.length) {
+      const currentEntry = logEntries[currentEntryIndex];
+      const nextEntry = logEntries[nextEntryIndex];
+
+      if (
+        currentEntry.eventType === 'match' &&
+        (<MatchRoundEventDTO>currentEntry.event).type === 'started'
+      ) {
+        opennings.push((<MatchRoundEventDTO>currentEntry.event).id);
+      }
+
+      if (
+        nextEntry.eventType === 'match' &&
+        (<MatchRoundEventDTO>nextEntry.event).type === 'ended'
+      ) {
+        const matchId = (<MatchRoundEventDTO>nextEntry.event).id;
+        if (!opennings.includes(matchId)) {
+          throw new BadRequestException(
+            `The match with id ${matchId} does not have a start event`,
+          );
+        }
+
+        opennings.pop();
+      }
+
+      currentEntryIndex++;
+      nextEntryIndex++;
+    }
+
+    if (opennings.length > 0) {
+      throw new BadRequestException(
+        `There is no ending event for the following matches: ${opennings.toString()}`,
+      );
+    }
+  }
+
+  private validateMatchStart(logEntries: LogEntry[]): void {
+    const firstEvent = logEntries.at(0);
+    const isMatchStartEvent =
+      firstEvent?.eventType === 'match' &&
+      (<MatchRoundEventDTO>firstEvent.event).type === 'started';
+
+    if (!isMatchStartEvent) {
+      throw new BadRequestException(
+        'The first event must be a match start event',
+      );
+    }
+  }
+
+  private validateMatchEnd(logEntries: LogEntry[]): void {
+    const lastEvent = logEntries.at(-1);
+    const isMatchEndEvent =
+      lastEvent?.eventType === 'match' &&
+      (<MatchRoundEventDTO>lastEvent.event).type === 'ended';
+
+    if (!isMatchEndEvent) {
+      throw new BadRequestException(
+        'The last event must be a match ended event',
+      );
+    }
+  }
+
+  private validate(logEntries: LogEntry[]): void | Error {
+    this.validateMatchStart(logEntries);
+    this.validateMatchEnd(logEntries);
+    this.validateMatchEnds(logEntries);
   }
 }
