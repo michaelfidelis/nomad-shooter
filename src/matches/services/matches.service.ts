@@ -1,13 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { Span, TraceService } from 'nestjs-otel';
 import { LogEntry } from '../../common/dtos/log-entry.dto';
 import { MatchRoundEventDTO } from '../../common/dtos/match-round-event.dto';
 import { MatchEventStrategy } from '../match-round/match-event.strategy';
 import { Match } from '../match.entity';
 import { PlayerEventStrategy } from '../players/player-event.strategy';
 import { EventStrategy } from '../strategies/event.strategy';
-import { Span } from 'nestjs-otel';
-import { TraceService } from 'nestjs-otel';
 
 @Injectable()
 export class MatchesService {
@@ -16,10 +15,13 @@ export class MatchesService {
     player: new PlayerEventStrategy(),
   };
 
+  private readonly logger = new Logger(MatchesService.name);
+
   constructor(private readonly traceService: TraceService) {}
 
   @Span('MatchesService#calculateRankings')
   calculateRankings(logEntries: LogEntry[]): Match {
+    this.logger.log('Calculating rankings', { logEntries: logEntries.length });
     const otelSpan = this.traceService.getSpan();
     try {
       otelSpan?.setAttribute('logEntries', logEntries.length);
@@ -38,6 +40,9 @@ export class MatchesService {
       return match;
     } catch (error) {
       otelSpan?.recordException(error);
+
+      /* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */
+      this.logger.error(error?.message);
       throw error;
     }
   }
