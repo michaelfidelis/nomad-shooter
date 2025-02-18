@@ -1,11 +1,149 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nomad</title>
-</head>
-<body>
-    <h1>Nomad Shooter</h1>
-</body>
+<html lang="en" class="theme-light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css"
+    />
+    <title>Nomad |DEV</title>
+  </head>
+  <body>
+    <section class="hero">
+      <div class="hero-body">
+        <div class="container has-text-centered">
+          <div
+            class="is-flex is-flex-direction-row is-justify-content-end is-fullwidth"
+          >
+            <div class="buttons has-addons">
+              <button
+                class="button theme-button dark-theme-button"
+                onclick="selectTheme('dark')"
+              >
+                🌚
+              </button>
+              <button
+                class="button theme-button light-theme-button"
+                onclick="selectTheme('light')"
+              >
+                🌞
+              </button>
+            </div>
+          </div>
+          <p class="title">Nomad Shooter</p>
+          <p class="subtitle">Detalhes da Partida</p>
+        </div>
+      </div>
+    </section>
+    <section class="container pb-4 is-hidden" id="error-message-section">
+      <article class="message is-danger">
+        <div class="message-header">
+          <p>Erro ao obter dados</p>
+          <button class="delete" aria-label="delete" onclick="closeErrorMessage()"></button>
+        </div>
+        <div class="message-body"></div>
+      </article>
+    </section>
+    <section class="upload-form pb-4">
+      <form class="container form" onsubmit="return false">
+        <div class="file has-name is-fullwidth">
+          <label class="file-label">
+            <input
+              class="file-input"
+              type="file"
+              name="match-logs"
+              id="file-upload-input"
+              accept=".txt, .log"
+            />
+            <span class="file-cta">
+              <span class="file-icon">
+                <i class="fas fa-upload"></i>
+              </span>
+              <span class="file-label">Selecionar</span>
+            </span>
+            <span class="file-name" id="file-name">Nada selecionado</span>
+          </label>
+        </div>
+      </form>
+    </section>
+    <main class="container">
+      <section id="match">
+        <div class="match-info pb-4">
+          <div class="match-players">
+            <table
+              class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
+            >
+              <thead>
+                <tr>
+                  <th colspan="6">Resultados da Partida</th>
+                </tr>
+                <tr>
+                  <th class="has-text-centered" width="10%">Posição</th>
+                  <th>Nome</th>
+                  <th class="has-text-centered">Kills</th>
+                  <th class="has-text-centered">Mortes</th>
+                  <th class="has-text-centered">Streak</th>
+                  <th>Prêmios</th>
+                </tr>
+              </thead>
+              <tbody id="player-scores">
+                <tr>
+                  <td colspan="6" class="has-text-centered">
+                    Nenhum resultado
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="mvp" class="pb-4">
+        <table
+          class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
+        >
+          <thead>
+            <tr>
+              <th colspan="3">MVP</th>
+            </tr>
+            <tr>
+              <th>Nome</th>
+              <th class="has-text-centered">Flags</th>
+              <th>Melhor arma</th>
+            </tr>
+          </thead>
+          <tbody id="mvp-stats-base-info">
+            <tr>
+              <td colspan="3" class="has-text-centered">Nenhum resultado</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="rounds" class="pb-4">
+        <table
+          class="table is-bordered is-striped is-narrow is-hoverable is-fullwidth"
+        >
+          <thead>
+            <tr>
+              <th colspan="3">Rounds</th>
+            </tr>
+            <tr>
+              <th>Inicio</th>
+              <th>Fim</th>
+              <th>Flags</th>
+            </tr>
+          </thead>
+          <tbody id="round-stats">
+            <tr>
+              <td colspan="3" class="has-text-centered">Nenhum resultado</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+    <section class="players-list"></section>
+    <script src="./public/index.js" defer></script>
+  </body>
 </html>
