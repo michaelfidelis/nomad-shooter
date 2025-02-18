@@ -1,3 +1,5 @@
+import { PlayerResponse } from '../../common/dtos/player-response.dto';
+
 export type WeaponStats = Record<string, number>;
 
 export type PlayerTimeline = {
@@ -68,7 +70,7 @@ export class Player {
     this.#achievements.push(achievement);
   }
 
-  toJson() {
+  toJson(): PlayerResponse {
     return {
       name: this.#name,
       weaponStats: this.#weaponStats,
