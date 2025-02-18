@@ -13,13 +13,17 @@ describe('AppController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+
+    /* eslint-disable @typescript-eslint/ban-ts-comment */ /* eslint-disable @typescript-eslint/no-unsafe-call */
+    // @ts-ignore
+
+    app.setViewEngine('hbs');
+    /* eslint-enable @typescript-eslint/ban-ts-comment */ /* eslint-enable @typescript-eslint/no-unsafe-call */
+
     await app.init();
   });
 
   it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+    return request(app.getHttpServer()).get('/').expect(200);
   });
 });
