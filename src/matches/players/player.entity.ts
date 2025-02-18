@@ -139,7 +139,7 @@ export class Player {
 
   private computeOnlyDeathsAndNoKillsAchievement(): void {
     if (this.#playerTimeline.every((timeline) => timeline.type === 'death')) {
-      this.addAchievement('The target');
+      this.addAchievement('Born to die');
     }
   }
 }
