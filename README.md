@@ -21,6 +21,14 @@ $ make test-e2e
 ```
 ---
 
+## Links úteis
+| URL                                   | Descrição                                   |
+| :-                                    | :-                                          |
+| http://localhost:3000                 | View                                        |
+| http://localhost:3000/api/swagger     | Swagger do projeto com mais detalhes da API |
+| http://localhost:16686                | Métricas do projeto com Jaeger              |
+
+
 ## Problema proposto
 Dado o seguinte log de um jogo de tiro em primeira pessoa:
 ```
