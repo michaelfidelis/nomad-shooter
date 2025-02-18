@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MatchRoundEventDTO } from '../../dtos/match-round-event.dto';
 import { PlayerEventDTO } from '../../dtos/player-event.dto';
 import { LogEntry } from '../../dtos/log-entry.dto';
+import { Span } from 'nestjs-otel';
 
 @Injectable()
 export class LogParserService {
@@ -11,6 +12,7 @@ export class LogParserService {
   private readonly PLAYER_EVENT_REGEX =
     /(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2}):(\d{2}) - (<WORLD>|\w+)\s+killed\s+(\w+)\s+(?:using|by)\s+([\w-]+)/;
 
+  @Span('LogParserService#parse')
   parse(data: string = ''): LogEntry[] {
     const lines = data?.split(/\r?\n/);
 

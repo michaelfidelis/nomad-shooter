@@ -2,6 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LogEntry } from 'src/common/dtos/log-entry.dto';
 import { MatchesService } from './matches.service';
+import { CommonModule } from '../../common/common.module';
 
 describe('MatchesService', () => {
   let service: MatchesService;
@@ -9,6 +10,7 @@ describe('MatchesService', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [MatchesService],
+      imports: [CommonModule],
     }).compile();
 
     service = module.get<MatchesService>(MatchesService);

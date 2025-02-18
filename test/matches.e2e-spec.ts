@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
 import { MatchesModule } from '../src/matches/matches.module';
+import { OpenTelemetryModule } from 'nestjs-otel';
 
 const logData = `
     23/04/2019 15:34:22 - New match 11348965 has started
@@ -16,7 +17,7 @@ describe('MatchesController (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [MatchesModule],
+      imports: [MatchesModule, OpenTelemetryModule.forRoot()],
     }).compile();
 
     app = moduleFixture.createNestApplication();

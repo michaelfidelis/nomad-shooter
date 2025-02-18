@@ -6,6 +6,8 @@ import { MatchEventStrategy } from '../match-round/match-event.strategy';
 import { Match } from '../match.entity';
 import { PlayerEventStrategy } from '../players/player-event.strategy';
 import { EventStrategy } from '../strategies/event.strategy';
+import { Span } from 'nestjs-otel';
+import { TraceService } from 'nestjs-otel';
 
 @Injectable()
 export class MatchesService {
@@ -14,20 +16,30 @@ export class MatchesService {
     player: new PlayerEventStrategy(),
   };
 
+  constructor(private readonly traceService: TraceService) {}
+
+  @Span('MatchesService#calculateRankings')
   calculateRankings(logEntries: LogEntry[]): Match {
-    this.validate(logEntries);
+    const otelSpan = this.traceService.getSpan();
+    try {
+      otelSpan?.setAttribute('logEntries', logEntries.length);
+      this.validate(logEntries);
 
-    const match = new Match(randomUUID(), logEntries[0].datetime);
-    for (const logEntry of logEntries) {
-      const { eventType } = logEntry;
+      const match = new Match(randomUUID(), logEntries[0].datetime);
+      for (const logEntry of logEntries) {
+        const { eventType } = logEntry;
 
-      const eventStrategy = this.strategies[eventType];
-      if (eventStrategy) {
-        eventStrategy.handleEvent(match, logEntry);
+        const eventStrategy = this.strategies[eventType];
+        if (eventStrategy) {
+          eventStrategy.handleEvent(match, logEntry);
+        }
       }
+      match.finish();
+      return match;
+    } catch (error) {
+      otelSpan?.recordException(error);
+      throw error;
     }
-    match.finish();
-    return match;
   }
 
   private validateMatchEnds(logEntries: LogEntry[]): void {
@@ -98,6 +110,7 @@ export class MatchesService {
     }
   }
 
+  @Span('MatchesService#validate')
   private validate(logEntries: LogEntry[]): void | Error {
     this.validateMatchStart(logEntries);
     this.validateMatchEnd(logEntries);

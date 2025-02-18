@@ -9,6 +9,7 @@ import {
 import { LogParserService } from '../common/services/log-parser/log-parser.service';
 import { FileUploadInterceptor } from './interceptors/file-upload.interceptor';
 import { MatchesService } from './services/matches.service';
+import { Span } from 'nestjs-otel';
 
 @Controller('/api/matches')
 export class MatchesController {
@@ -20,6 +21,7 @@ export class MatchesController {
     private readonly matchesService: MatchesService,
   ) {}
 
+  @Span(`MatchesController#create`)
   @Post()
   @UseInterceptors(new FileUploadInterceptor().getInterceptor())
   create(
